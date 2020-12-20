@@ -25,22 +25,24 @@ func (comp *SimpleComparer) Count() int {
 	return comp.count
 }
 
-// Swaper swaps two ints
+// Swapper swaps two ints
 type Swapper interface {
 	Swap(left, right *int)
 	Count() int
 }
 
-// SimpleSwaper inverts two ints and counts number of calls
+// SimpleSwapper inverts two ints and counts number of calls
 type SimpleSwapper struct {
 	count int
 }
 
+// Swap swaps two ints in place and counts number of calls
 func (swap *SimpleSwapper) Swap(left, right *int) {
 	swap.count = swap.count + 1
 	*left, *right = *right, *left
 }
 
+// Count returns the number of time Swap has been called
 func (swap *SimpleSwapper) Count() int {
 	return swap.count
 }
