@@ -3,7 +3,7 @@ package list_test
 import "testing"
 import "github.com/belarte/data_struct/list"
 
-func TestSimpleCompare(t *testing.T) {
+func TestSimpleComparerCompare(t *testing.T) {
 	tests := []struct {
 		left     int
 		right    int
@@ -19,7 +19,7 @@ func TestSimpleCompare(t *testing.T) {
 		{86, 86, true},
 	}
 
-	comparer := list.SimpleComparer{}
+	var comparer list.Comparer = &list.SimpleComparer{}
 	for _, test := range tests {
 		got := comparer.Compare(test.left, test.right)
 		if got != test.expected {
@@ -28,7 +28,7 @@ func TestSimpleCompare(t *testing.T) {
 	}
 }
 
-func TestSimpleCount(t *testing.T) {
+func TestSimpleComparerCount(t *testing.T) {
 	tests := []struct {
 		call  bool
 		count int
@@ -42,7 +42,7 @@ func TestSimpleCount(t *testing.T) {
 		{false, 4},
 	}
 
-	comparer := list.SimpleComparer{}
+	var comparer list.Comparer = &list.SimpleComparer{}
 	for _, test := range tests {
 		if test.call {
 			comparer.Compare(0, 0)
