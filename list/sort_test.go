@@ -1,7 +1,11 @@
 package list_test
 
-import "testing"
-import "github.com/belarte/data_struct/list"
+import (
+	"reflect"
+	"testing"
+
+	"github.com/belarte/data_struct/list"
+)
 
 func TestSimpleComparerCompare(t *testing.T) {
 	tests := []struct {
@@ -98,6 +102,28 @@ func TestSimpleSwapperCount(t *testing.T) {
 		got := swapper.Count()
 		if got != test.count {
 			t.Errorf("Expected count should be %v, but is %v", test.count, got)
+		}
+	}
+}
+
+func TestSelectionSorter(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{"empty list", []int{}, []int{}},
+		{"single element list", []int{42}, []int{42}},
+		{"sorted list", []int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4, 5}},
+		{"reverse sorted list", []int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
+		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
+	}
+
+	var sorter list.Sorter = &list.SelectionSorter{}
+	for _, test := range tests {
+		sorter.Sort(test.input)
+		if !reflect.DeepEqual(test.input, test.expected) {
+			t.Errorf("'%v' test failed, list is: %v but should be %v", test.name, test.input, test.expected)
 		}
 	}
 }

@@ -51,3 +51,17 @@ func (swap *SimpleSwapper) Count() int {
 type Sorter interface {
 	Sort(List)
 }
+
+type SelectionSorter struct{}
+
+func (sorter SelectionSorter) Sort(list List) {
+	for i := 0; i < len(list)-1; i++ {
+		index := i
+		for j := i + 1; j < len(list); j++ {
+			if list[j] < list[index] {
+				index = j
+			}
+		}
+		list[i], list[index] = list[index], list[i]
+	}
+}
