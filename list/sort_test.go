@@ -2,11 +2,11 @@ package list_test
 
 import (
 	"math/rand"
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/belarte/data_struct/list"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSimpleComparerCompare(t *testing.T) {
@@ -28,9 +28,7 @@ func TestSimpleComparerCompare(t *testing.T) {
 	var comparer list.Comparer = &list.LessThan{}
 	for _, test := range tests {
 		got := comparer.Compare(test.left, test.right)
-		if got != test.expected {
-			t.Errorf("%v < %v is %v", test.left, test.right, got)
-		}
+		assert.Equal(t, test.expected, got, "%v < %v is %v", test.left, test.right, got)
 	}
 }
 
@@ -54,9 +52,7 @@ func TestSimpleComparerCount(t *testing.T) {
 			comparer.Compare(0, 0)
 		}
 		got := comparer.Count()
-		if got != test.count {
-			t.Errorf("Expected count should be %v, but is %v", test.count, got)
-		}
+		assert.Equal(t, test.count, got, "Expected count should be %v, but is %v", test.count, got)
 	}
 }
 
@@ -75,9 +71,8 @@ func TestSimpleSwapperSwap(t *testing.T) {
 	var swapper list.Swapper = &list.SimpleSwapper{}
 	for _, test := range tests {
 		swapper.Swap(&test.left, &test.right)
-		if test.left != test.expectedLeft || test.right != test.expectedRight {
-			t.Errorf("Swap(%v, %v) != (%v, %v)", test.left, test.right, test.expectedLeft, test.expectedRight)
-		}
+		assert.Equal(t, test.expectedLeft, test.left, "Left is %v but should be %v", test.left, test.expectedLeft)
+		assert.Equal(t, test.expectedRight, test.right, "Right is %v but should be %v", test.right, test.expectedRight)
 	}
 }
 
@@ -102,9 +97,7 @@ func TestSimpleSwapperCount(t *testing.T) {
 			swapper.Swap(&left, &right)
 		}
 		got := swapper.Count()
-		if got != test.count {
-			t.Errorf("Expected count should be %v, but is %v", test.count, got)
-		}
+		assert.Equal(t, test.count, got, "Expected count should be %v, but is %v", test.count, got)
 	}
 }
 
@@ -126,9 +119,7 @@ func TestSelectionSorter(t *testing.T) {
 	var sorter list.Sorter = &list.SelectionSorter{}
 	for _, test := range tests {
 		sorter.Sort(test.input)
-		if !reflect.DeepEqual(test.input, test.expected) {
-			t.Errorf("'%v' test failed, list is: %v but should be %v", test.name, test.input, test.expected)
-		}
+		assert.Equal(t, test.expected, test.input, "List should be sorted")
 	}
 }
 
@@ -150,9 +141,7 @@ func TestInsertionSorter(t *testing.T) {
 	var sorter list.Sorter = &list.InsertionSorter{}
 	for _, test := range tests {
 		sorter.Sort(test.input)
-		if !reflect.DeepEqual(test.input, test.expected) {
-			t.Errorf("'%v' test failed, list is: %v but should be %v", test.name, test.input, test.expected)
-		}
+		assert.Equal(t, test.expected, test.input, "List should be sorted")
 	}
 }
 
