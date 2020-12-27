@@ -65,3 +65,15 @@ func (sorter SelectionSorter) Sort(list List) {
 		list[i], list[index] = list[index], list[i]
 	}
 }
+
+type InsertionSorter struct{}
+
+func (sorter InsertionSorter) Sort(list List) {
+	for i := 0; i < len(list); i++ {
+		j := i
+		for j > 0 && list[j-1] > list[j] {
+			list[j], list[j-1] = list[j-1], list[j]
+			j--
+		}
+	}
+}

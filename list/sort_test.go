@@ -116,6 +116,8 @@ func TestSelectionSorter(t *testing.T) {
 	}{
 		{"empty list", []int{}, []int{}},
 		{"single element list", []int{42}, []int{42}},
+		{"sorted pair", []int{2, 4}, []int{2, 4}},
+		{"reverse sorted list", []int{4, 2}, []int{2, 4}},
 		{"sorted list", []int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4, 5}},
 		{"reverse sorted list", []int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
@@ -130,10 +132,42 @@ func TestSelectionSorter(t *testing.T) {
 	}
 }
 
-func BenchmarkSelectionsorter(b *testing.B) {
+func TestInsertionSorter(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{"empty list", []int{}, []int{}},
+		{"single element list", []int{42}, []int{42}},
+		{"sorted pair", []int{2, 4}, []int{2, 4}},
+		{"reverse sorted list", []int{4, 2}, []int{2, 4}},
+		{"sorted list", []int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4, 5}},
+		{"reverse sorted list", []int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
+		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
+	}
+
+	var sorter list.Sorter = &list.InsertionSorter{}
+	for _, test := range tests {
+		sorter.Sort(test.input)
+		if !reflect.DeepEqual(test.input, test.expected) {
+			t.Errorf("'%v' test failed, list is: %v but should be %v", test.name, test.input, test.expected)
+		}
+	}
+}
+
+func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
 		var sorter list.Sorter = &list.SelectionSorter{}
+		sorter.Sort(rand.Perm(2048))
+	}
+}
+
+func BenchmarkInsertionSorter(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	for i := 0; i < b.N; i++ {
+		var sorter list.Sorter = &list.InsertionSorter{}
 		sorter.Sort(rand.Perm(2048))
 	}
 }
