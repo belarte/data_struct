@@ -16,7 +16,7 @@ type LessThan struct {
 
 // Compare returns true if the ints are equal
 func (comp *LessThan) Compare(left, right int) bool {
-	comp.count = comp.count + 1
+	comp.count++
 	return left < right
 }
 
@@ -38,7 +38,7 @@ type SimpleSwapper struct {
 
 // Swap swaps two ints in place and counts number of calls
 func (swap *SimpleSwapper) Swap(left, right *int) {
-	swap.count = swap.count + 1
+	swap.count++
 	*left, *right = *right, *left
 }
 
