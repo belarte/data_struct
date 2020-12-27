@@ -1,8 +1,10 @@
 package list_test
 
 import (
+	"math/rand"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/belarte/data_struct/list"
 )
@@ -125,5 +127,13 @@ func TestSelectionSorter(t *testing.T) {
 		if !reflect.DeepEqual(test.input, test.expected) {
 			t.Errorf("'%v' test failed, list is: %v but should be %v", test.name, test.input, test.expected)
 		}
+	}
+}
+
+func BenchmarkSelectionsorter(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	for i := 0; i < b.N; i++ {
+		var sorter list.Sorter = &list.SelectionSorter{}
+		sorter.Sort(rand.Perm(2048))
 	}
 }
