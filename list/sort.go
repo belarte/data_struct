@@ -52,8 +52,10 @@ type Sorter interface {
 	Sort(List)
 }
 
+// SelectionSorter implements selection sort on a list of integers
 type SelectionSorter struct{}
 
+// Sort sorts the list in place
 func (sorter SelectionSorter) Sort(list List) {
 	for i := 0; i < len(list)-1; i++ {
 		index := i
@@ -66,8 +68,10 @@ func (sorter SelectionSorter) Sort(list List) {
 	}
 }
 
+// InsertionSorter implements insertion sort on a list of integers
 type InsertionSorter struct{}
 
+// Sort sorts the list in place
 func (sorter InsertionSorter) Sort(list List) {
 	for i := 0; i < len(list); i++ {
 		j := i
