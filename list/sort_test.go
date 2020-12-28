@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/belarte/data_struct/list"
+	"github.com/belarte/data_struct/list/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestSimpleComparerCompare(t *testing.T) {
@@ -101,6 +103,37 @@ func TestSimpleSwapperCount(t *testing.T) {
 	}
 }
 
+func TestSelectionSorterCallsSwapperAndReturnsCorrectCount(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{"empty list", []int{}, 0},
+		{"single element list", []int{42}, 0},
+		{"sorted pair", []int{2, 4}, 1},
+		{"reverse sorted list", []int{4, 2}, 1},
+		{"sorted list", []int{1, 2, 3, 4, 5}, 4},
+		{"reverse sorted list", []int{5, 4, 3, 2, 1}, 4},
+		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, 5},
+	}
+
+	for _, test := range tests {
+		var swapper list.Swapper = &list.SimpleSwapper{}
+		var sorter list.Sorter = &list.SelectionSorter{swapper}
+		sorter.Sort(test.input)
+		assert.Equal(t, test.expected, swapper.Count(), test.name)
+	}
+}
+
+func TestSelectionsorterCallsSwapper(t *testing.T) {
+	swapper := &mocks.Swapper{}
+	defer swapper.AssertExpectations(t)
+	var sorter list.Sorter = &list.SelectionSorter{swapper}
+	swapper.On("Swap", mock.Anything, mock.Anything).Times(4)
+	sorter.Sort([]int{3, 1, 5, 4, 2})
+}
+
 func TestSelectionSorter(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -116,7 +149,7 @@ func TestSelectionSorter(t *testing.T) {
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
 	}
 
-	var sorter list.Sorter = &list.SelectionSorter{}
+	var sorter list.Sorter = &list.SelectionSorter{&list.SimpleSwapper{}}
 	for _, test := range tests {
 		sorter.Sort(test.input)
 		assert.Equal(t, test.expected, test.input, "List should be sorted")
@@ -148,7 +181,7 @@ func TestInsertionSorter(t *testing.T) {
 func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = &list.SelectionSorter{}
+		var sorter list.Sorter = &list.SelectionSorter{&list.SimpleSwapper{}}
 		sorter.Sort(rand.Perm(2048))
 	}
 }

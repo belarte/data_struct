@@ -53,10 +53,12 @@ type Sorter interface {
 }
 
 // SelectionSorter implements selection sort on a list of integers
-type SelectionSorter struct{}
+type SelectionSorter struct {
+	Swapper Swapper
+}
 
 // Sort sorts the list in place
-func (sorter SelectionSorter) Sort(list List) {
+func (s SelectionSorter) Sort(list List) {
 	for i := 0; i < len(list)-1; i++ {
 		index := i
 		for j := i + 1; j < len(list); j++ {
@@ -64,7 +66,7 @@ func (sorter SelectionSorter) Sort(list List) {
 				index = j
 			}
 		}
-		list[i], list[index] = list[index], list[i]
+		s.Swapper.Swap(&list[i], &list[index])
 	}
 }
 
