@@ -152,7 +152,7 @@ func TestSelectionSorter(t *testing.T) {
 	var sorter list.Sorter = &list.SelectionSorter{&list.SimpleSwapper{}}
 	for _, test := range tests {
 		sorter.Sort(test.input)
-		assert.Equal(t, test.expected, test.input, "List should be sorted")
+		assert.Equal(t, test.expected, test.input, test.name)
 	}
 }
 
@@ -174,7 +174,7 @@ func TestInsertionSorter(t *testing.T) {
 	var sorter list.Sorter = &list.InsertionSorter{}
 	for _, test := range tests {
 		sorter.Sort(test.input)
-		assert.Equal(t, test.expected, test.input, "List should be sorted")
+		assert.Equal(t, test.expected, test.input, test.name)
 	}
 }
 
