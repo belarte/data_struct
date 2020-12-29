@@ -72,14 +72,17 @@ func (s SelectionSorter) Sort(list List) {
 }
 
 // InsertionSorter implements insertion sort on a list of integers
-type InsertionSorter struct{}
+type InsertionSorter struct {
+	Comparer Comparer
+	Swapper  Swapper
+}
 
 // Sort sorts the list in place
-func (sorter InsertionSorter) Sort(list List) {
+func (s InsertionSorter) Sort(list List) {
 	for i := 0; i < len(list); i++ {
 		j := i
-		for j > 0 && list[j-1] > list[j] {
-			list[j], list[j-1] = list[j-1], list[j]
+		for j > 0 && s.Comparer.Compare(list[j], list[j-1]) {
+			s.Swapper.Swap(&list[j], &list[j-1])
 			j--
 		}
 	}

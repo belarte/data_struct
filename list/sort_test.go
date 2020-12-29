@@ -202,7 +202,7 @@ func TestInsertionSorter(t *testing.T) {
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
 	}
 
-	var sorter list.Sorter = &list.InsertionSorter{}
+	var sorter list.Sorter = &list.InsertionSorter{&list.LessThan{}, &list.SimpleSwapper{}}
 	for _, test := range tests {
 		sorter.Sort(test.input)
 		assert.Equal(t, test.expected, test.input, test.name)
@@ -220,7 +220,7 @@ func BenchmarkSelectionSorter(b *testing.B) {
 func BenchmarkInsertionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = &list.InsertionSorter{}
+		var sorter list.Sorter = &list.InsertionSorter{&list.LessThan{}, &list.SimpleSwapper{}}
 		sorter.Sort(rand.Perm(2048))
 	}
 }
