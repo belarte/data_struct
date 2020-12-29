@@ -120,7 +120,7 @@ func TestSelectionSorterCallsSwapperAndReturnsCorrectCount(t *testing.T) {
 
 	for _, test := range tests {
 		var swapper list.Swapper = &list.SimpleSwapper{}
-		var sorter list.Sorter = &list.SelectionSorter{swapper}
+		var sorter list.Sorter = &list.SelectionSorter{&list.LessThan{}, swapper}
 		sorter.Sort(test.input)
 		assert.Equal(t, test.expected, swapper.Count(), test.name)
 	}
@@ -129,8 +129,39 @@ func TestSelectionSorterCallsSwapperAndReturnsCorrectCount(t *testing.T) {
 func TestSelectionsorterCallsSwapper(t *testing.T) {
 	swapper := &mocks.Swapper{}
 	defer swapper.AssertExpectations(t)
-	var sorter list.Sorter = &list.SelectionSorter{swapper}
+	var sorter list.Sorter = &list.SelectionSorter{&list.LessThan{}, swapper}
 	swapper.On("Swap", mock.Anything, mock.Anything).Times(4)
+	sorter.Sort([]int{3, 1, 5, 4, 2})
+}
+
+func TestSelectionSorterCallsComparerAndReturnsCorrectCount(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{"empty list", []int{}, 0},
+		{"single element list", []int{42}, 0},
+		{"sorted pair", []int{2, 4}, 1},
+		{"reverse sorted list", []int{4, 2}, 1},
+		{"sorted list", []int{1, 2, 3, 4, 5}, 10},
+		{"reverse sorted list", []int{5, 4, 3, 2, 1}, 10},
+		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, 15},
+	}
+
+	for _, test := range tests {
+		var comparer list.Comparer = &list.LessThan{}
+		var sorter list.Sorter = &list.SelectionSorter{comparer, &list.SimpleSwapper{}}
+		sorter.Sort(test.input)
+		assert.Equal(t, test.expected, comparer.Count(), test.name)
+	}
+}
+
+func TestSelectionsorterCallsComparer(t *testing.T) {
+	comparer := &mocks.Comparer{}
+	defer comparer.AssertExpectations(t)
+	var sorter list.Sorter = &list.SelectionSorter{comparer, &list.SimpleSwapper{}}
+	comparer.On("Compare", mock.Anything, mock.Anything).Times(10).Return(false)
 	sorter.Sort([]int{3, 1, 5, 4, 2})
 }
 
@@ -149,7 +180,7 @@ func TestSelectionSorter(t *testing.T) {
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
 	}
 
-	var sorter list.Sorter = &list.SelectionSorter{&list.SimpleSwapper{}}
+	var sorter list.Sorter = &list.SelectionSorter{&list.LessThan{}, &list.SimpleSwapper{}}
 	for _, test := range tests {
 		sorter.Sort(test.input)
 		assert.Equal(t, test.expected, test.input, test.name)
@@ -181,7 +212,7 @@ func TestInsertionSorter(t *testing.T) {
 func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = &list.SelectionSorter{&list.SimpleSwapper{}}
+		var sorter list.Sorter = &list.SelectionSorter{&list.LessThan{}, &list.SimpleSwapper{}}
 		sorter.Sort(rand.Perm(2048))
 	}
 }
