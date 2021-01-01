@@ -55,9 +55,9 @@ type Sorter interface {
 func NewSorter(name string, c Comparer, s Swapper) Sorter {
 	switch name {
 	case "selection":
-		return &SelectionSorter{c, s}
+		return &selectionSorter{c, s}
 	case "insertion":
-		return &InsertionSorter{c, s}
+		return &insertionSorter{c, s}
 	default:
 		return nil
 
@@ -65,13 +65,13 @@ func NewSorter(name string, c Comparer, s Swapper) Sorter {
 }
 
 // SelectionSorter implements selection sort on a list of integers
-type SelectionSorter struct {
+type selectionSorter struct {
 	comparer Comparer
 	swapper  Swapper
 }
 
 // Sort sorts the list in place
-func (s SelectionSorter) Sort(list List) {
+func (s selectionSorter) Sort(list List) {
 	for i := 0; i < len(list)-1; i++ {
 		index := i
 		for j := i + 1; j < len(list); j++ {
@@ -84,13 +84,13 @@ func (s SelectionSorter) Sort(list List) {
 }
 
 // InsertionSorter implements insertion sort on a list of integers
-type InsertionSorter struct {
+type insertionSorter struct {
 	comparer Comparer
 	swapper  Swapper
 }
 
 // Sort sorts the list in place
-func (s InsertionSorter) Sort(list List) {
+func (s insertionSorter) Sort(list List) {
 	for i := 0; i < len(list); i++ {
 		j := i
 		for j > 0 && s.comparer.Compare(list[j], list[j-1]) {
