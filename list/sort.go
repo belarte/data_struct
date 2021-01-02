@@ -47,17 +47,31 @@ func (swap *SimpleSwapper) Count() int {
 	return swap.count
 }
 
+// Printer displays a list
+type Printer interface {
+	// Print displays the list
+	Print(list List)
+}
+
+// NoPrint is to be used when no output is expected
+type NoPrint struct{}
+
+// Print does not do anything
+func (p *NoPrint) Print(list List) {
+}
+
 // Sorter sorts list in place
 type Sorter interface {
 	Sort(List)
 }
 
-func NewSorter(name string, c Comparer, s Swapper) Sorter {
+// NewSorter creates a new sorting algorithm
+func NewSorter(name string, c Comparer, s Swapper, p Printer) Sorter {
 	switch name {
 	case "selection":
-		return &selectionSorter{c, s}
+		return &selectionSorter{c, s, p}
 	case "insertion":
-		return &insertionSorter{c, s}
+		return &insertionSorter{c, s, p}
 	default:
 		return nil
 
@@ -68,6 +82,7 @@ func NewSorter(name string, c Comparer, s Swapper) Sorter {
 type selectionSorter struct {
 	comparer Comparer
 	swapper  Swapper
+	printer  Printer
 }
 
 // Sort sorts the list in place
@@ -87,6 +102,7 @@ func (s selectionSorter) Sort(list List) {
 type insertionSorter struct {
 	comparer Comparer
 	swapper  Swapper
+	printer  Printer
 }
 
 // Sort sorts the list in place

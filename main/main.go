@@ -12,7 +12,7 @@ func run(name string, size int) {
 	l := rand.Perm(size)
 	swapper := &list.SimpleSwapper{}
 	comparer := &list.LessThan{}
-	sorter := list.NewSorter(name, comparer, swapper)
+	sorter := list.NewSorter(name, comparer, swapper, &list.NoPrint{})
 	sorter.Sort(l)
 	fmt.Println("Swap.Count    ", swapper.Count())
 	fmt.Println("Compare.Count ", comparer.Count())
