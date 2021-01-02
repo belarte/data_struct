@@ -1,5 +1,7 @@
 package list
 
+import "fmt"
+
 // List to be sorted
 type List []int
 
@@ -60,6 +62,14 @@ type NoPrint struct{}
 func (p *NoPrint) Print(list List) {
 }
 
+// CommandLinePrinter is to be used when an output on the command line is desired
+type CommandLinePrinter struct{}
+
+// Print displays the list on the command line
+func (p *CommandLinePrinter) Print(list List) {
+	fmt.Println(list)
+}
+
 // Sorter sorts list in place
 type Sorter interface {
 	Sort(List)
@@ -87,6 +97,7 @@ type selectionSorter struct {
 
 // Sort sorts the list in place
 func (s selectionSorter) Sort(list List) {
+	s.printer.Print(list)
 	for i := 0; i < len(list)-1; i++ {
 		index := i
 		for j := i + 1; j < len(list); j++ {
@@ -95,6 +106,7 @@ func (s selectionSorter) Sort(list List) {
 			}
 		}
 		s.swapper.Swap(&list[i], &list[index])
+		s.printer.Print(list)
 	}
 }
 
@@ -107,10 +119,12 @@ type insertionSorter struct {
 
 // Sort sorts the list in place
 func (s insertionSorter) Sort(list List) {
+	s.printer.Print(list)
 	for i := 0; i < len(list); i++ {
 		j := i
 		for j > 0 && s.comparer.Compare(list[j], list[j-1]) {
 			s.swapper.Swap(&list[j], &list[j-1])
+			s.printer.Print(list)
 			j--
 		}
 	}

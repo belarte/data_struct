@@ -7,12 +7,12 @@ import (
 	"math/rand"
 )
 
-func run(name string, size int) {
+func run(name string, size int, printer list.Printer) {
 	fmt.Printf("Running %v sorter with list of size %v\n", name, size)
 	l := rand.Perm(size)
 	swapper := &list.SimpleSwapper{}
 	comparer := &list.LessThan{}
-	sorter := list.NewSorter(name, comparer, swapper, &list.NoPrint{})
+	sorter := list.NewSorter(name, comparer, swapper, printer)
 	sorter.Sort(l)
 	fmt.Println("Swap.Count    ", swapper.Count())
 	fmt.Println("Compare.Count ", comparer.Count())
@@ -25,10 +25,10 @@ func main() {
 
 	switch *algo {
 	case "insertion", "selection":
-		run(*algo, *size)
+		run(*algo, *size, &list.CommandLinePrinter{})
 	case "":
-		run("insertion", *size)
-		run("selection", *size)
+		run("insertion", *size, &list.NoPrint{})
+		run("selection", *size, &list.NoPrint{})
 	default:
 		fmt.Println("Unknown sorting algorithm...")
 	}
