@@ -165,7 +165,7 @@ func TestSelectionsorterCallsComparer(t *testing.T) {
 	sorter.Sort([]int{3, 1, 5, 4, 2})
 }
 
-func TestSelectionSorter(t *testing.T) {
+func testSorters(t *testing.T, sorter list.Sorter) {
 	tests := []struct {
 		name     string
 		input    []int
@@ -180,33 +180,20 @@ func TestSelectionSorter(t *testing.T) {
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
 	}
 
-	var sorter list.Sorter = list.NewSorter("selection", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
 	for _, test := range tests {
 		sorter.Sort(test.input)
 		assert.Equal(t, test.expected, test.input, test.name)
 	}
 }
 
-func TestInsertionSorter(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    []int
-		expected []int
-	}{
-		{"empty list", []int{}, []int{}},
-		{"single element list", []int{42}, []int{42}},
-		{"sorted pair", []int{2, 4}, []int{2, 4}},
-		{"reverse sorted list", []int{4, 2}, []int{2, 4}},
-		{"sorted list", []int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4, 5}},
-		{"reverse sorted list", []int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
-		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
-	}
+func TestSelectionSorter(t *testing.T) {
+	var sorter list.Sorter = list.NewSorter("selection", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
+	testSorters(t, sorter)
+}
 
+func TestInsertionSorter(t *testing.T) {
 	var sorter list.Sorter = list.NewSorter("insertion", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
-	for _, test := range tests {
-		sorter.Sort(test.input)
-		assert.Equal(t, test.expected, test.input, test.name)
-	}
+	testSorters(t, sorter)
 }
 
 func BenchmarkSelectionSorter(b *testing.B) {
