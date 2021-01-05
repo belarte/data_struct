@@ -27,11 +27,12 @@ func main() {
 	rand.Seed(time.Now().Unix())
 
 	switch *algo {
-	case "insertion", "selection":
+	case "insertion", "selection", "merge":
 		run(*algo, *size, &list.CommandLinePrinter{})
 	case "":
 		run("insertion", *size, &list.NoPrint{})
 		run("selection", *size, &list.NoPrint{})
+		run("merge", *size, &list.NoPrint{})
 	default:
 		fmt.Println("Unknown sorting algorithm...")
 	}

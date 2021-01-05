@@ -82,7 +82,7 @@ func testSorters(t *testing.T, sorter list.Sorter) {
 		{"empty list", []int{}, []int{}},
 		{"single element list", []int{42}, []int{42}},
 		{"sorted pair", []int{2, 4}, []int{2, 4}},
-		{"reverse sorted list", []int{4, 2}, []int{2, 4}},
+		{"reverse sorted pair", []int{4, 2}, []int{2, 4}},
 		{"sorted list", []int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4, 5}},
 		{"reverse sorted list", []int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
@@ -104,6 +104,11 @@ func TestInsertionSorter(t *testing.T) {
 	testSorters(t, sorter)
 }
 
+func TestMergeSorter(t *testing.T) {
+	var sorter list.Sorter = list.NewSorter("merge", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
+	testSorters(t, sorter)
+}
+
 func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
@@ -116,6 +121,14 @@ func BenchmarkInsertionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
 		var sorter list.Sorter = list.NewSorter("insertion", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
+		sorter.Sort(rand.Perm(2048))
+	}
+}
+
+func BenchmarkMergeSorter(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	for i := 0; i < b.N; i++ {
+		var sorter list.Sorter = list.NewSorter("merge", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
 		sorter.Sort(rand.Perm(2048))
 	}
 }

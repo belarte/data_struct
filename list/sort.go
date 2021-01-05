@@ -12,20 +12,19 @@ func NewSorter(name string, c Comparer, s Swapper, p Printer) Sorter {
 		return &selectionSorter{c, s, p}
 	case "insertion":
 		return &insertionSorter{c, s, p}
+	case "merge":
+		return &mergeSorter{c, s, p}
 	default:
 		return nil
-
 	}
 }
 
-// SelectionSorter implements selection sort on a list of integers
 type selectionSorter struct {
 	comparer Comparer
 	swapper  Swapper
 	printer  Printer
 }
 
-// Sort sorts the list in place
 func (s selectionSorter) Sort(list List) {
 	s.printer.Print(list)
 	for i := 0; i < len(list)-1; i++ {
@@ -40,14 +39,12 @@ func (s selectionSorter) Sort(list List) {
 	}
 }
 
-// InsertionSorter implements insertion sort on a list of integers
 type insertionSorter struct {
 	comparer Comparer
 	swapper  Swapper
 	printer  Printer
 }
 
-// Sort sorts the list in place
 func (s insertionSorter) Sort(list List) {
 	s.printer.Print(list)
 	for i := 0; i < len(list); i++ {
@@ -57,5 +54,38 @@ func (s insertionSorter) Sort(list List) {
 			s.printer.Print(list)
 			j--
 		}
+	}
+}
+
+type mergeSorter struct {
+	comparer Comparer
+	swapper  Swapper
+	printer  Printer
+}
+
+func (s mergeSorter) Sort(list List) {
+	s.printer.Print(list)
+	s.sort(list, 0, len(list))
+}
+
+func (s mergeSorter) sort(list List, start, end int) {
+	if end-start < 2 {
+		return
+	}
+
+	mid := start + (end-start)/2
+	s.sort(list, start, mid)
+	s.sort(list, mid, end)
+
+	for start < mid {
+		if s.comparer.Compare(list[mid], list[start]) {
+			s.swapper.Swap(&list[start], &list[mid])
+			s.printer.Print(list)
+			for i := mid; i < end-1 && s.comparer.Compare(list[i+1], list[i]); i++ {
+				s.swapper.Swap(&list[i], &list[i+1])
+				s.printer.Print(list)
+			}
+		}
+		start++
 	}
 }
