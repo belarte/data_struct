@@ -3,7 +3,7 @@ package list
 type sortersList []string
 
 // Sorters is a list of available sorting algorithms
-var Sorters sortersList = []string{"insertion", "selection", "merge"}
+var Sorters sortersList = []string{"insertion", "selection", "merge", "parallel_merge"}
 
 // Contains returns true if the parameter is a valid sorting algorithm
 func (s sortersList) Contains(name string) bool {
@@ -29,6 +29,8 @@ func NewSorter(name string, c Comparer, s Swapper, p Printer) Sorter {
 		return &insertionSorter{c, s, p}
 	case "merge":
 		return &mergeSorter{c, s, p}
+	case "parallel_merge":
+		return &parallelMergeSorter{c, s, p}
 	default:
 		return nil
 	}
@@ -96,6 +98,57 @@ func (s mergeSorter) sort(list List, start, end int) {
 }
 
 func (s mergeSorter) merge(list List, start, mid, end int) {
+	lower := make([]int, mid-start)
+	copy(lower, list[start:mid])
+	low := 0
+	up := mid
+	for i := start; i < end && low < mid-start && up < end; i++ {
+		if s.comparer.Compare(lower[low], list[up]) {
+			list[i] = lower[low]
+			low++
+		} else {
+			list[i] = list[up]
+			up++
+		}
+	}
+
+	again := start + (end - mid)
+	for low < mid-start {
+		list[again+low] = lower[low]
+		low++
+	}
+
+}
+
+type parallelMergeSorter struct {
+	comparer Comparer
+	swapper  Swapper
+	printer  Printer
+}
+
+func (s parallelMergeSorter) Sort(list List) {
+	s.printer.Print(list)
+	s.sort(list, 0, len(list))
+}
+
+func (s parallelMergeSorter) sort(list List, start, end int) {
+	if end-start < 2 {
+		return
+	}
+
+	mid := start + (end-start)/2
+	done := make(chan bool, 1)
+	go func() {
+		s.sort(list, start, mid)
+		done <- true
+	}()
+	s.sort(list, mid, end)
+	<-done
+	s.merge(list, start, mid, end)
+	s.printer.Print(list)
+}
+
+func (s parallelMergeSorter) merge(list List, start, mid, end int) {
 	lower := make([]int, mid-start)
 	copy(lower, list[start:mid])
 	low := 0

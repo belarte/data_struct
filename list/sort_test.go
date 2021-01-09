@@ -109,6 +109,11 @@ func TestMergeSorter(t *testing.T) {
 	testSorters(t, sorter)
 }
 
+func TestParallelMergeSorter(t *testing.T) {
+	var sorter list.Sorter = list.NewSorter("parallel_merge", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
+	testSorters(t, sorter)
+}
+
 func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
@@ -129,6 +134,14 @@ func BenchmarkMergeSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
 		var sorter list.Sorter = list.NewSorter("merge", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
+		sorter.Sort(rand.Perm(2048))
+	}
+}
+
+func BenchmarkParallelMergeSorter(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	for i := 0; i < b.N; i++ {
+		var sorter list.Sorter = list.NewSorter("parallel_merge", &list.LessThan{}, &list.SimpleSwapper{}, &list.NoPrint{})
 		sorter.Sort(rand.Perm(2048))
 	}
 }
