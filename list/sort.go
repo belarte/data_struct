@@ -1,5 +1,20 @@
 package list
 
+type sortersList []string
+
+// Sorters is a list of available sorting algorithms
+var Sorters sortersList = []string{"insertion", "selection", "merge"}
+
+// Contains returns true if the parameter is a valid sorting algorithm
+func (s sortersList) Contains(name string) bool {
+	for _, v := range s {
+		if name == v {
+			return true
+		}
+	}
+	return false
+}
+
 // Sorter sorts list in place
 type Sorter interface {
 	Sort(List)
