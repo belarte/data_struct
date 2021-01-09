@@ -76,16 +76,29 @@ func (s mergeSorter) sort(list List, start, end int) {
 	mid := start + (end-start)/2
 	s.sort(list, start, mid)
 	s.sort(list, mid, end)
+	s.merge(list, start, mid, end)
+	s.printer.Print(list)
+}
 
-	for start < mid {
-		if s.comparer.Compare(list[mid], list[start]) {
-			s.swapper.Swap(&list[start], &list[mid])
-			s.printer.Print(list)
-			for i := mid; i < end-1 && s.comparer.Compare(list[i+1], list[i]); i++ {
-				s.swapper.Swap(&list[i], &list[i+1])
-				s.printer.Print(list)
-			}
+func (s mergeSorter) merge(list List, start, mid, end int) {
+	lower := make([]int, mid-start)
+	copy(lower, list[start:mid])
+	low := 0
+	up := mid
+	for i := start; i < end && low < mid-start && up < end; i++ {
+		if s.comparer.Compare(lower[low], list[up]) {
+			list[i] = lower[low]
+			low++
+		} else {
+			list[i] = list[up]
+			up++
 		}
-		start++
 	}
+
+	again := start + (end - mid)
+	for low < mid-start {
+		list[again+low] = lower[low]
+		low++
+	}
+
 }
