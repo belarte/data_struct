@@ -107,17 +107,17 @@ func (s mergeSorter) merge(list List, start, mid, end int) {
 	up := mid
 	for i := start; i < end && low < mid-start && up < end; i++ {
 		if s.comparer.Compare(lower[low], list[up]) {
-			list[i] = lower[low]
+			s.assigner.Assign(&list[i], lower[low])
 			low++
 		} else {
-			list[i] = list[up]
+			s.assigner.Assign(&list[i], list[up])
 			up++
 		}
 	}
 
 	again := start + (end - mid)
 	for low < mid-start {
-		list[again+low] = lower[low]
+		s.assigner.Assign(&list[again+low], lower[low])
 		low++
 	}
 
@@ -159,17 +159,17 @@ func (s parallelMergeSorter) merge(list List, start, mid, end int) {
 	up := mid
 	for i := start; i < end && low < mid-start && up < end; i++ {
 		if s.comparer.Compare(lower[low], list[up]) {
-			list[i] = lower[low]
+			s.assigner.Assign(&list[i], lower[low])
 			low++
 		} else {
-			list[i] = list[up]
+			s.assigner.Assign(&list[i], list[up])
 			up++
 		}
 	}
 
 	again := start + (end - mid)
 	for low < mid-start {
-		list[again+low] = lower[low]
+		s.assigner.Assign(&list[again+low], lower[low])
 		low++
 	}
 
