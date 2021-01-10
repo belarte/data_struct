@@ -21,7 +21,7 @@ func TestMergeSorterMerge(t *testing.T) {
 		{"interleaved 2 list", []int{2, 4, 6, 8, 1, 3, 5, 7}, []int{1, 2, 3, 4, 5, 6, 7, 8}},
 	}
 
-	sorter := mergeSorter{&LessThan{}, &SimpleSwapper{}, &NoPrint{}}
+	sorter := mergeSorter{&LessThan{}, &SimpleAssigner{}, &SimpleSwapper{}, &NoPrint{}}
 	for _, test := range tests {
 		sorter.merge(test.input, 0, len(test.input)/2, len(test.input))
 		assert.Equal(t, test.expected, test.input, test.name)

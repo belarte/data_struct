@@ -21,16 +21,16 @@ type Sorter interface {
 }
 
 // NewSorter creates a new sorting algorithm
-func NewSorter(name string, c Comparer, s Swapper, p Printer) Sorter {
+func NewSorter(name string, c Comparer, a Assigner, s Swapper, p Printer) Sorter {
 	switch name {
 	case "selection":
-		return &selectionSorter{c, s, p}
+		return &selectionSorter{c, a, s, p}
 	case "insertion":
-		return &insertionSorter{c, s, p}
+		return &insertionSorter{c, a, s, p}
 	case "merge":
-		return &mergeSorter{c, s, p}
+		return &mergeSorter{c, a, s, p}
 	case "parallel_merge":
-		return &parallelMergeSorter{c, s, p}
+		return &parallelMergeSorter{c, a, s, p}
 	default:
 		return nil
 	}
@@ -38,6 +38,7 @@ func NewSorter(name string, c Comparer, s Swapper, p Printer) Sorter {
 
 type selectionSorter struct {
 	comparer Comparer
+	assigner Assigner
 	swapper  Swapper
 	printer  Printer
 }
@@ -58,6 +59,7 @@ func (s selectionSorter) Sort(list List) {
 
 type insertionSorter struct {
 	comparer Comparer
+	assigner Assigner
 	swapper  Swapper
 	printer  Printer
 }
@@ -76,6 +78,7 @@ func (s insertionSorter) Sort(list List) {
 
 type mergeSorter struct {
 	comparer Comparer
+	assigner Assigner
 	swapper  Swapper
 	printer  Printer
 }
@@ -122,6 +125,7 @@ func (s mergeSorter) merge(list List, start, mid, end int) {
 
 type parallelMergeSorter struct {
 	comparer Comparer
+	assigner Assigner
 	swapper  Swapper
 	printer  Printer
 }

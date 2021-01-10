@@ -12,10 +12,12 @@ func run(name string, size int, printer list.Printer) {
 	fmt.Printf("Running %v sorter with list of size %v\n", name, size)
 	l := rand.Perm(size)
 	swapper := &list.SimpleSwapper{}
+	assigner := &list.SimpleAssigner{}
 	comparer := &list.LessThan{}
-	sorter := list.NewSorter(name, comparer, swapper, printer)
+	sorter := list.NewSorter(name, comparer, assigner, swapper, printer)
 	sorter.Sort(l)
 	fmt.Println("Swap.Count    ", swapper.Count())
+	fmt.Println("Assign.Count  ", assigner.Count())
 	fmt.Println("Compare.Count ", comparer.Count())
 }
 
