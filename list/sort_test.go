@@ -106,7 +106,7 @@ func TestSelectionSorterNeverCallsAssigner(t *testing.T) {
 	sorter.Sort([]int{3, 1, 5, 4, 2})
 }
 
-func testSorters(t *testing.T, sorter list.Sorter) {
+func testSorters(t *testing.T, name string) {
 	tests := []struct {
 		name     string
 		input    []int
@@ -121,6 +121,12 @@ func testSorters(t *testing.T, sorter list.Sorter) {
 		{"shuffled list", []int{2, 5, 3, 6, 1, 4}, []int{1, 2, 3, 4, 5, 6}},
 	}
 
+	var sorter list.Sorter = list.NewSorter(
+		name,
+		&list.LessThan{},
+		&list.SimpleAssigner{},
+		&list.SimpleSwapper{},
+		&list.NoPrint{})
 	for _, test := range tests {
 		sorter.Sort(test.input)
 		assert.Equal(t, test.expected, test.input, test.name)
@@ -128,93 +134,55 @@ func testSorters(t *testing.T, sorter list.Sorter) {
 }
 
 func TestSelectionSorter(t *testing.T) {
-	var sorter list.Sorter = list.NewSorter(
-		"selection",
-		&list.LessThan{},
-		&list.SimpleAssigner{},
-		&list.SimpleSwapper{},
-		&list.NoPrint{})
-	testSorters(t, sorter)
+	testSorters(t, "selection")
 }
 
 func TestInsertionSorter(t *testing.T) {
-	var sorter list.Sorter = list.NewSorter(
-		"insertion",
-		&list.LessThan{},
-		&list.SimpleAssigner{},
-		&list.SimpleSwapper{},
-		&list.NoPrint{})
-	testSorters(t, sorter)
+	testSorters(t, "insertion")
 }
 
 func TestMergeSorter(t *testing.T) {
-	var sorter list.Sorter = list.NewSorter(
-		"merge",
-		&list.LessThan{},
-		&list.SimpleAssigner{},
-		&list.SimpleSwapper{},
-		&list.NoPrint{})
-	testSorters(t, sorter)
+	testSorters(t, "merge")
 }
 
 func TestParallelMergeSorter(t *testing.T) {
+	testSorters(t, "parallel_merge")
+}
+
+func benchmarkRunner(algo string, size int) {
 	var sorter list.Sorter = list.NewSorter(
-		"parallel_merge",
+		algo,
 		&list.LessThan{},
 		&list.SimpleAssigner{},
 		&list.SimpleSwapper{},
 		&list.NoPrint{})
-	testSorters(t, sorter)
+	sorter.Sort(rand.Perm(size))
 }
 
 func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = list.NewSorter(
-			"selection",
-			&list.LessThan{},
-			&list.SimpleAssigner{},
-			&list.SimpleSwapper{},
-			&list.NoPrint{})
-		sorter.Sort(rand.Perm(2048))
+		benchmarkRunner("selection", 2048)
 	}
 }
 
 func BenchmarkInsertionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = list.NewSorter(
-			"insertion",
-			&list.LessThan{},
-			&list.SimpleAssigner{},
-			&list.SimpleSwapper{},
-			&list.NoPrint{})
-		sorter.Sort(rand.Perm(2048))
+		benchmarkRunner("insertion", 2048)
 	}
 }
 
 func BenchmarkMergeSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = list.NewSorter(
-			"merge",
-			&list.LessThan{},
-			&list.SimpleAssigner{},
-			&list.SimpleSwapper{},
-			&list.NoPrint{})
-		sorter.Sort(rand.Perm(2048))
+		benchmarkRunner("merge", 2048)
 	}
 }
 
 func BenchmarkParallelMergeSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		var sorter list.Sorter = list.NewSorter(
-			"parallel_merge",
-			&list.LessThan{},
-			&list.SimpleAssigner{},
-			&list.SimpleSwapper{},
-			&list.NoPrint{})
-		sorter.Sort(rand.Perm(2048))
+		benchmarkRunner("parallel_merge", 2048)
 	}
 }
