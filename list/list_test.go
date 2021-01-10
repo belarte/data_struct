@@ -54,6 +54,53 @@ func TestSimpleComparerCount(t *testing.T) {
 	}
 }
 
+func TestSimpleAssignerAssign(t *testing.T) {
+	tests := []struct {
+		destination int
+		source      int
+	}{
+		{0, 0},
+		{0, 1},
+		{1, 0},
+		{1, 1},
+		{42, 42},
+		{42, 86},
+		{86, 42},
+		{86, 86},
+	}
+
+	var assigner list.Assigner = &list.SimpleAssigner{}
+	for _, test := range tests {
+		assigner.Assign(&test.destination, test.source)
+		assert.Equal(t, test.destination, test.source, "%v != %v", test.destination, test.source)
+	}
+}
+
+func TestSimpleAssignerCount(t *testing.T) {
+	tests := []struct {
+		call  bool
+		count int
+	}{
+		{false, 0},
+		{true, 1},
+		{false, 1},
+		{true, 2},
+		{true, 3},
+		{true, 4},
+		{false, 4},
+	}
+
+	var assigner list.Assigner = &list.SimpleAssigner{}
+	for _, test := range tests {
+		if test.call {
+			temp := 0
+			assigner.Assign(&temp, 0)
+		}
+		got := assigner.Count()
+		assert.Equal(t, test.count, got, "Expected count should be %v, but is %v", test.count, got)
+	}
+}
+
 func TestSimpleSwapperSwap(t *testing.T) {
 	tests := []struct {
 		left          int

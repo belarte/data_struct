@@ -27,6 +27,28 @@ func (comp *LessThan) Count() int {
 	return comp.count
 }
 
+// Assigner copy a value from source to destination
+type Assigner interface {
+	Assign(destination *int, source int)
+	Count() int
+}
+
+// SimpleAssigner copy a value from source to destination and count number of calls
+type SimpleAssigner struct {
+	count int
+}
+
+// Assign assigns the value from source to destination
+func (a *SimpleAssigner) Assign(destination *int, source int) {
+	*destination = source
+	a.count++
+}
+
+// Count returns the number of time Compare has been called
+func (a *SimpleAssigner) Count() int {
+	return a.count
+}
+
 // Swapper swaps two ints
 type Swapper interface {
 	Swap(left, right *int)
