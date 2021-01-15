@@ -149,6 +149,10 @@ func TestParallelMergeSorter(t *testing.T) {
 	testSorters(t, "parallel_merge")
 }
 
+func TestQuickSorter(t *testing.T) {
+	testSorters(t, "quick")
+}
+
 func benchmarkRunner(algo string, size int) {
 	var sorter list.Sorter = list.NewSorter(
 		algo,
@@ -184,5 +188,12 @@ func BenchmarkParallelMergeSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
 		benchmarkRunner("parallel_merge", 2048)
+	}
+}
+
+func BenchmarkQuickSorter(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	for i := 0; i < b.N; i++ {
+		benchmarkRunner("quick", 2048)
 	}
 }

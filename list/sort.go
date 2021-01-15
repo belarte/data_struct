@@ -3,7 +3,7 @@ package list
 type sortersList []string
 
 // Sorters is a list of available sorting algorithms
-var Sorters sortersList = []string{"insertion", "selection", "merge", "parallel_merge"}
+var Sorters sortersList = []string{"insertion", "selection", "merge", "parallel_merge", "quick"}
 
 // Contains returns true if the parameter is a valid sorting algorithm
 func (s sortersList) Contains(name string) bool {
@@ -31,6 +31,8 @@ func NewSorter(name string, c Comparer, a Assigner, s Swapper, p Printer) Sorter
 		return &mergeSorter{c, a, s, p}
 	case "parallel_merge":
 		return &parallelMergeSorter{c, a, s, p}
+	case "quick":
+		return &quickSorter{c, a, s, p}
 	default:
 		return nil
 	}
@@ -173,4 +175,44 @@ func (s parallelMergeSorter) merge(list List, start, mid, end int) {
 		low++
 	}
 
+}
+
+type quickSorter struct {
+	comparer Comparer
+	assigner Assigner
+	swapper  Swapper
+	printer  Printer
+}
+
+func (s quickSorter) Sort(list List) {
+	s.printer.Print(list)
+	s.sort(list, 0, len(list))
+}
+
+func (s quickSorter) sort(list List, start, end int) {
+	if end-start < 2 {
+		return
+	}
+
+	pivot := s.pivot(list, start, end)
+	s.sort(list, start, pivot)
+	s.sort(list, pivot+1, end)
+}
+
+func (s quickSorter) pivot(list List, start, end int) int {
+	lastIndex := end - 1
+	value := list[lastIndex]
+
+	pivot := start
+	for i := start; i < end; i++ {
+		if s.comparer.Compare(list[i], value) {
+			s.swapper.Swap(&list[pivot], &list[i])
+			s.printer.Print(list)
+			pivot++
+		}
+	}
+
+	s.swapper.Swap(&list[pivot], &list[end-1])
+	s.printer.Print(list)
+	return pivot
 }
