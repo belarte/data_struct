@@ -1,5 +1,7 @@
 package list
 
+import "sync"
+
 type sortersList []string
 
 // Sorters is a list of available sorting algorithms
@@ -142,14 +144,33 @@ func (s parallelMergeSorter) sort(list List, start, end int) {
 		return
 	}
 
+	if end-start <= 512 {
+		s.sequentialSort(list, start, end)
+		return
+	}
+
 	mid := start + (end-start)/2
-	done := make(chan bool, 1)
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		s.sort(list, start, mid)
-		done <- true
 	}()
+
 	s.sort(list, mid, end)
-	<-done
+	wg.Wait()
+	s.merge(list, start, mid, end)
+	s.printer.Print(list)
+}
+
+func (s parallelMergeSorter) sequentialSort(list List, start, end int) {
+	if end-start < 2 {
+		return
+	}
+
+	mid := start + (end-start)/2
+	s.sort(list, start, mid)
+	s.sort(list, mid, end)
 	s.merge(list, start, mid, end)
 	s.printer.Print(list)
 }
