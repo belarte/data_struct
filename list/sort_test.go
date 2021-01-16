@@ -153,47 +153,50 @@ func TestQuickSorter(t *testing.T) {
 	testSorters(t, "quick")
 }
 
-func benchmarkRunner(algo string, size int) {
+func benchmarkRunner(b *testing.B, algo string, size int) {
 	var sorter list.Sorter = list.NewSorter(
 		algo,
 		&list.LessThan{},
 		&list.SimpleAssigner{},
 		&list.SimpleSwapper{},
 		&list.NoPrint{})
-	sorter.Sort(rand.Perm(size))
+	list := rand.Perm(size)
+	b.StartTimer()
+	sorter.Sort(list)
+	b.StopTimer()
 }
 
 func BenchmarkSelectionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		benchmarkRunner("selection", 2048)
+		benchmarkRunner(b, "selection", 4096)
 	}
 }
 
 func BenchmarkInsertionSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		benchmarkRunner("insertion", 2048)
+		benchmarkRunner(b, "insertion", 4096)
 	}
 }
 
 func BenchmarkMergeSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		benchmarkRunner("merge", 2048)
+		benchmarkRunner(b, "merge", 4096)
 	}
 }
 
 func BenchmarkParallelMergeSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		benchmarkRunner("parallel_merge", 2048)
+		benchmarkRunner(b, "parallel_merge", 4096)
 	}
 }
 
 func BenchmarkQuickSorter(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 	for i := 0; i < b.N; i++ {
-		benchmarkRunner("quick", 2048)
+		benchmarkRunner(b, "quick", 4096)
 	}
 }
